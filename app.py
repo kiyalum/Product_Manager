@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+from models import init_db
+from action_db import *
 
 app = Flask(__name__)
 app.secret_key = "anything"
-items = []
-
+init_db()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -11,24 +12,20 @@ def index():
         product_name = request.form.get('name').lower()
         product_price = request.form.get('price')
         product_category = request.form.get('category')
-        for item in items:
-            if item.get('name') == product_name:
-                flash('Product already exists!')
-                break
+        if product_exist(product_name):
+            flash('Product already exists!')
         else:
-            items.append({'name': product_name,
-                          'price': product_price,
-                          'category': product_category})
+            add_product(product_name, product_price, product_category)
         return redirect(url_for('index'))
 
     filter_items = None
-    categories = map(lambda item: item['category'], items)
+    categories = get_all_categories()
     choice_category = request.args.get('category', 'all')
 
     if choice_category == 'all':
-        filter_items = items
+        filter_items = get_all_items()
     elif choice_category == 'category':
-        filter_items = filter(lambda item: item['category'] == choice_category, items)
+        filter_items = get_product_by_category(choice_category)
 
     return render_template('index.html',
                            items=filter_items,

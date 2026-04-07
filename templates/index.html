@@ -27,7 +27,9 @@
         <select name="category">
             <option value="all" {% if choice_category="all" %} selected {% endif %}>All</option>
             {% for category in categories %}
-                <option value="{{ category }}" {% if choice_category==category %} selected {% endif %}>{{ category.title() }}</option>
+                <option value="{{ row.category }}" {% if choice_category==row.category %} selected {% endif %}>
+                    {{ row.category.title() }}
+                </option>
             {% endfor %}
         </select>
         <button type="submit">Apply</button>
