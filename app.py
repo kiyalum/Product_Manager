@@ -13,9 +13,10 @@ def index():
         product_price = request.form.get('price')
         product_category = request.form.get('category')
         if product_exist(product_name):
-            flash('Product already exists!')
+            flash('Product already exists!', category='error')
         else:
             add_product(product_name, product_price, product_category)
+            flash('Product added!', 'success')
         return redirect(url_for('index'))
 
     filter_items = None
@@ -34,8 +35,7 @@ def index():
 
 @app.route('/delete/<item_index>')
 def delete(item_index):
-        items.pop(int(item_index))
-        flash('Item removed from list!')
-        return redirect(url_for('index'))
+    flash('Product deleted!', 'error')
+    return redirect(url_for('index'))
 
 app.run(debug=True)

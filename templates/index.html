@@ -3,61 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <title>ProductManager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for msg in messages %}
-                <p>{{ msg }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith%}
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="/">
+                    <img src="{{ url_for('static', filename='images/shopping-basket.png') }}" alt="logo">
+                    <span>PRODUCT MANAGER</span>
+                </a>
+            </div>
+        </div>
+    </header>
 
-    <form method="POST">
-        <label for="name">Name: </label>
-        <input type="text" name="name" id="name" placeholder="Enter product's name" required>
-        <label for="price">Name: </label>
-        <input type="number" name="price" id="price" placeholder="Enter product's price" required>
-        <label for="category">Name: </label>
-        <input type="text" name="category" id="category" placeholder="Enter product's category" required>
-        <button type="submit">Add product</button>
-    </form>
-    <br>
-    <form method="GET">
-        <select name="category">
-            <option value="all" {% if choice_category="all" %} selected {% endif %}>All</option>
-            {% for category in categories %}
-                <option value="{{ row.category }}" {% if choice_category==row.category %} selected {% endif %}>
-                    {{ row.category.title() }}
-                </option>
-            {% endfor %}
-        </select>
-        <button type="submit">Apply</button>
-    </form>
-    <br>
-    <table border="1px" cellpadding="5px">
-        <thead>
-            <tr>
-                <td>Name</td>
-                <td>Price</td>
-                <td>Category</td>
-                <td>Delete item</td>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-                <tr>
-                    <td>{{ item['name'] }}</td>
-                    <td>{{ item['price'] }}</td>
-                    <td>{{ item['category'] }}</td>
-                    <td>
-                        <a href="{{ url_for('delete', item_index=loop.index0) }}">
-                            <button type="submit">Delete</button>
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <p class="flash {{ category }}">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <label for="name">Name: </label>
+                <input type="text" name="name" id="name" placeholder="Enter product's name" required>
+                <label for="price">Name: </label>
+                <input type="number" name="price" id="price" placeholder="Enter product's price" required>
+                <label for="category">Name: </label>
+                <input type="text" name="category" id="category" placeholder="Enter product's category" required>
+                <button type="submit">Add product</button>
+            </form>
+            <br>
+            <form method="GET">
+                <select name="category">
+                    <option value="all" {% if choice_category=="all" %} selected {% endif %}>All</option>
+                    {% for row in categories %}
+                        <option value="{{ row.category }}" {% if choice_category==row.category %} selected {% endif %}>
+                            {{ row.category.title() }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Apply</button>
+            </form>
+            <br>
+            <table border="1px" cellpadding="5px">
+                <thead>
+                    <tr>
+                        <td>Name</td>
+                        <td>Price</td>
+                        <td>Category</td>
+                        <td>Delete item</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td>{{ item['name'] }}</td>
+                            <td>{{ item['price'] }}</td>
+                            <td>{{ item['category'] }}</td>
+                            <td>
+                                <a href="{{ url_for('delete', item_index=loop.index0) }}">
+                                    <button type="submit">Delete</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+
 </body>
 </html>
