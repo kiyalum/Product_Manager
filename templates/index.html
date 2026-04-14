@@ -32,7 +32,7 @@
                 <input type="text" name="name" id="name" placeholder="Enter product's name" required>
                 <label for="price">Name: </label>
                 <input type="number" name="price" id="price" placeholder="Enter product's price" required>
-                <label for="category">Name: </label>
+                <label for="category">Category: </label>
                 <input type="text" name="category" id="category" placeholder="Enter product's category" required>
                 <button type="submit">Add product</button>
             </form>
@@ -61,11 +61,11 @@
                 <tbody>
                     {% for item in items %}
                         <tr>
-                            <td>{{ item['name'] }}</td>
-                            <td>{{ item['price'] }}</td>
-                            <td>{{ item['category'] }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>{{ item.category }}</td>
                             <td>
-                                <a href="{{ url_for('delete', item_index=loop.index0) }}">
+                                <a href="{{ url_for('delete', name=item.name) }}">
                                     <button type="submit">Delete</button>
                                 </a>
                             </td>

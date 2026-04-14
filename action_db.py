@@ -18,4 +18,5 @@ def add_product(name, price, category):
     Product.create(name=name, price=price, category=category)
 
 # видалення
-
+def delete_product(name):
+    Product.delete().where(Product.name == name).execute()

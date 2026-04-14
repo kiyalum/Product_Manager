@@ -25,7 +25,7 @@ def index():
 
     if choice_category == 'all':
         filter_items = get_all_items()
-    elif choice_category == 'category':
+    else:
         filter_items = get_product_by_category(choice_category)
 
     return render_template('index.html',
@@ -33,8 +33,9 @@ def index():
                            categories=categories,
                            choice_category=choice_category)
 
-@app.route('/delete/<item_index>')
-def delete(item_index):
+@app.route('/delete/<name>')
+def delete(name):
+    delete_product(name)
     flash('Product deleted!', 'error')
     return redirect(url_for('index'))
 
