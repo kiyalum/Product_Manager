@@ -11,29 +11,57 @@ init_db()
 def is_logged():
     return 'company_name' in session
 
+def current_company():
+    name_company = session.get('company_name')
+    if not name_company:
+        return None
+    return get_company_by_name(name_company)
+
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    current_company()
+    if request.method == 'POST':
+        name = request.form.get('name_company')
+        password = request.form.get('password')
+
+        if company_exists(name):
+            flash('Company already exists!')
+            return redirect(url_for('register'))
+        else:
+            password_hash = generate_password_hash(password)
+
+            flash(f'Company {name} is registered!')
+            add_company(name, password_hash)
+            return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+@app.route('/index', methods=['GET', 'POST'])
 def index():
     if not is_logged():
         return redirect(url_for('login'))
+
+    company = current_company()
 
     if request.method == 'POST':
         product_name = request.form.get('name').lower()
         product_price = float(request.form.get('price'))
         product_category = request.form.get('category').lower()
-        if product_exist(product_name):
+        if product_exist(product_name, company.id):
             flash('Product already exists!')
         else:
-            add_product(product_name, product_price, product_category)
+            add_product(product_name, product_price, product_category, company.id)
             flash('Product added!')
         return redirect(url_for('index'))
 
-    categories = get_all_categories()
+    categories = get_all_categories(company.id)
     choice_category = request.args.get('category', 'all')
 
     if choice_category == 'all':
-        filter_items = get_all_products()
+        filter_items = get_all_products(company.id)
     else:
-        filter_items = get_product_by_category(choice_category)
+        filter_items = get_product_by_category(choice_category, company.id)
 
     return render_template('index.html',
                            items=filter_items,
@@ -42,27 +70,21 @@ def index():
 
 @app.route('/delete/<name>')
 def delete(name):
-        delete_product(name)
-        flash('Item removed from list!')
-        return redirect(url_for('index'))
+    if not is_logged():
+        return redirect(url_for('login'))
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        name = request.form.get('name_company')
-        password = request.form.get('password')
+    company = current_company()
+    delete_product(name, company.id)
+    flash('Item removed from list!')
+    return redirect(url_for('index'))
 
-        if company_exists(name):
-            flash('Company already exists!')
-            return redirect(url_for('register'))
-        else:    
-            password_hash = generate_password_hash(password)
+@app.route('/logout')
+def logout():
+    session.pop('company_name', None)
+    flash('You leave from system!')
+    return redirect(url_for('login'))
 
-            flash(f'Company {name} is registered!')
-            add_company(name, password_hash)
-            return redirect(url_for('login'))
 
-    return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
